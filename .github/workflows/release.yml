@@ -126,9 +126,15 @@ jobs:
             echo "::notice title=jetbrains skipped::the release environment has no JETBRAINS_TOKEN secret"
             exit 0
           fi
+          version="${GITHUB_REF_NAME#v}"
           publish() {
             if ! curl --fail --silent --show-error "https://plugins.jetbrains.com/plugins/list?pluginId=$1" | grep -q "<idea-plugin"; then
               echo "::notice title=jetbrains skipped::$1 is not listed on the marketplace yet, its first version is approved by hand"
+              return 0
+            fi
+            id="$(curl --fail --silent --show-error "https://plugins.jetbrains.com/api/plugins/intellij/$1" | jq -r .id)"
+            if [ -n "$id" ] && curl --fail --silent --show-error "https://plugins.jetbrains.com/api/plugins/$id/updates" | jq -e --arg version "$version" 'any(.[]; .version == $version)' > /dev/null; then
+              echo "::notice title=jetbrains skipped::$1 $version is already on the marketplace"
               return 0
             fi
             curl --fail-with-body --silent --show-error \
