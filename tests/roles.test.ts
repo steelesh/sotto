@@ -128,7 +128,7 @@ const snapshot: Record<string, Probe[]> = {
   ],
   "themes/jetbrains/sotto.xml": [
     ["cursor", /<option name="CARET_COLOR" value="([0-9a-f]{6})"/, "caret"],
-    ["selection", /<option name="SELECTION_BACKGROUND" value="([0-9a-f]{6})"/, "held"],
+    ["selection", /<option name="SELECTION_BACKGROUND" value="([0-9a-f]{6})"/, "selection"],
   ],
 };
 

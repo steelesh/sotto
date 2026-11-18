@@ -22,6 +22,7 @@ export const names = [
   "lull",
   "near",
   "held",
+  "selection",
   "tint_add",
   "tint_add_strong",
   "tint_change",

@@ -24,6 +24,7 @@
     "lull": { "hex": "#1f1f1f", "group": "surface", "use": "code blocks, subtle emphasis" },
     "near": { "hex": "#222222", "group": "surface", "use": "the current item in a list" },
     "held": { "hex": "#262626", "group": "surface", "use": "selection, matching bracket" },
+    "selection": { "hex": "#3d384a", "group": "surface", "use": "active text selection in jetbrains editors" },
 
     "tint_add": { "hex": "#0a2224", "group": "tint", "use": "added lines" },
     "tint_add_strong": { "hex": "#0c292b", "group": "tint", "use": "changed words in an added line" },

@@ -21,6 +21,7 @@ return {
     lull = "#1f1f1f",
     near = "#222222",
     held = "#262626",
+    selection = "#3d384a",
     tint_add = "#0a2224",
     tint_add_strong = "#0c292b",
     tint_change = "#1f1e38",

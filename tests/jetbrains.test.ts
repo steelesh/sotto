@@ -322,7 +322,7 @@ test("the page, the cursor and the selection use their palette colors", () => {
   assert.equal(attributes.get("TEXT")?.get("BACKGROUND"), palette.colors.still.slice(1));
   assert.equal(colors.get("CARET_COLOR"), palette.colors.caret.slice(1));
   assert.equal(colors.get("CARET_ROW_COLOR"), "");
-  assert.equal(colors.get("SELECTION_BACKGROUND"), palette.colors.held.slice(1));
+  assert.equal(colors.get("SELECTION_BACKGROUND"), palette.colors.selection.slice(1));
   assert.equal(colors.get("CONSOLE_BACKGROUND_KEY"), palette.colors.still.slice(1));
 });
 

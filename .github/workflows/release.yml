@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   check:
-    uses: $/.github/workflows/ci.yml
+    uses: ./.github/workflows/ci.yml
 
   build:
     needs: check
@@ -97,14 +97,11 @@ jobs:
         with:
           name: packages
           path: dist
-      - name: publish to open vsx, skipped until the release environment holds OVSX_PAT
+      - name: publish to open vsx
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
-          if [ -z "$OVSX_PAT" ]; then
-            echo "::notice title=open vsx skipped::the release environment has no OVSX_PAT secret"
-            exit 0
-          fi
+          : "${OVSX_PAT:?release environment is missing OVSX_PAT}"
           mise exec -- ovsx publish --skip-duplicate --packagePath dist/sotto-*.vsix
 
   jetbrains:
@@ -118,33 +115,34 @@ jobs:
         with:
           name: packages
           path: dist
-      - name: publish to the jetbrains marketplace, skipped until the release environment holds JETBRAINS_TOKEN
+      - name: publish to the jetbrains marketplace
         env:
           JETBRAINS_TOKEN: ${{ secrets.JETBRAINS_TOKEN }}
+        shell: bash
         run: |
-          if [ -z "$JETBRAINS_TOKEN" ]; then
-            echo "::notice title=jetbrains skipped::the release environment has no JETBRAINS_TOKEN secret"
-            exit 0
-          fi
+          : "${JETBRAINS_TOKEN:?release environment is missing JETBRAINS_TOKEN}"
           version="${GITHUB_REF_NAME#v}"
           publish() {
-            if ! curl --fail --silent --show-error "https://plugins.jetbrains.com/plugins/list?pluginId=$1" | grep -q "<idea-plugin"; then
-              echo "::notice title=jetbrains skipped::$1 is not listed on the marketplace yet, its first version is approved by hand"
-              return 0
-            fi
-            id="$(curl --fail --silent --show-error "https://plugins.jetbrains.com/api/plugins/intellij/$1" | jq -r .id)"
-            if [ -n "$id" ] && curl --fail --silent --show-error "https://plugins.jetbrains.com/api/plugins/$id/updates" | jq -e --arg version "$version" 'any(.[]; .version == $version)' > /dev/null; then
-              echo "::notice title=jetbrains skipped::$1 $version is already on the marketplace"
+            local plugin_id="$1" archive="$2" matches
+            matches=$(curl --fail --silent --show-error --retry 3 --get \
+              --data-urlencode "version=$version" \
+              "https://plugins.jetbrains.com/api/plugins/$plugin_id/updates" | \
+              jq -er --arg version "$version" '
+                if type == "array" then
+                  map(select(.version == $version and .channel == "")) | length
+                else error("expected a list of plugin updates") end')
+            if (( matches > 0 )); then
+              echo "::notice::$archive $version is already on JetBrains Marketplace"
               return 0
             fi
             curl --fail-with-body --silent --show-error \
               --header "Authorization: Bearer $JETBRAINS_TOKEN" \
-              --form "xmlId=$1" \
-              --form "file=@$2" \
+              --form "pluginId=$plugin_id" \
+              --form "file=@$archive" \
               https://plugins.jetbrains.com/api/updates/upload
           }
-          publish dev.steelesh.sotto dist/sotto-jetbrains.zip
-          publish dev.steelesh.sotto.icons "$(ls dist/sotto-icons-*.zip)"
+          publish 36124 dist/sotto-jetbrains.zip
+          publish 36126 "dist/sotto-icons-$version.zip"
 
   github:
     needs: build

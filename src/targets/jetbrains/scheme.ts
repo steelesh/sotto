@@ -396,7 +396,7 @@ function surfaces(c: Colors): Record<string, string> {
   const editor: Record<string, string> = {
     CARET_COLOR: c.caret,
     CARET_ROW_COLOR: "",
-    SELECTION_BACKGROUND: c.held,
+    SELECTION_BACKGROUND: c.selection,
     SELECTION_BACKGROUND_INACTIVE: c.near,
     SELECTION_FOREGROUND: "",
     LINE_NUMBERS_COLOR: c.breath,

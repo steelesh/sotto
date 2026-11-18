@@ -4,6 +4,7 @@ pnpm = "12.18.0"
 biome = "2.6.7"
 stylua = "2.6.0"
 shellcheck = "0.11.0"
+actionlint = "1.7.12"
 neovim = "0.12.6"
 java = "temurin-21"
 gradle = "9.8.2"
@@ -29,9 +30,9 @@ description = "test the palette, the generated files and the neovim plugin"
 run = ["node --test tests/*.test.ts", "nvim -l tests/nvim/run.lua"]
 
 [tasks.lint]
-description = "lint typescript, lua and shell, and check formatting and types"
+description = "lint workflows, typescript, lua and shell, and check formatting and types"
 depends = ["install"]
-run = ["biome check --error-on-warnings", "stylua --check .", "shellcheck scripts/validate.sh", "tsc"]
+run = ["actionlint", "biome check --error-on-warnings", "stylua --check .", "shellcheck scripts/validate.sh", "tsc"]
 
 [tasks.format]
 description = "format typescript, json and lua in place"
